@@ -106,7 +106,6 @@ void wakeup_waiting_threads(fcfsrwlock_t *lock) {
     if (lock->head == NULL) {
         return;
     }
-
     node_t *nodeToDequeue = lock->head;
     do {
         lock->head = nodeToDequeue->next;
@@ -117,7 +116,7 @@ void wakeup_waiting_threads(fcfsrwlock_t *lock) {
 
         sem_post(&(nodeToDequeue->waiting));
         nodeToDequeue = lock->head;
-    } while (nodeToDequeue->is_writer == 0);
+    } while (nodeToDequeue != NULL && nodeToDequeue->is_writer == 0);
 }
 
 // protocol for starting a read
