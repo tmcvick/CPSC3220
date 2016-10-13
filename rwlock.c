@@ -62,8 +62,13 @@ void destroy_lock(fcfsrwlock_t *lock) {
 node_t *enqueue_reader(fcfsrwlock_t *lock) {
     sem_post(&(lock->mutex));
     node_t *nodeToEnqueue = create_node();
-    lock->tail->next = nodeToEnqueue;
-    lock->tail = nodeToEnqueue;
+    if (lock->head == NULL) {
+        lock->head = nodeToEnqueue;
+        lock->tail = nodeToEnqueue;
+    } else {
+        lock->tail->next = nodeToEnqueue;
+        lock->tail = nodeToEnqueue;
+    }
 
     return nodeToEnqueue;
 }
@@ -76,9 +81,13 @@ node_t *enqueue_writer(fcfsrwlock_t *lock) {
     sem_post(&(lock->mutex));
     node_t *nodeToEnqueue = create_node();
     nodeToEnqueue->is_writer = 1;
-    lock->tail->next = nodeToEnqueue;
-    lock->tail = nodeToEnqueue;
-
+    if (lock->head == NULL) {
+        lock->head = nodeToEnqueue;
+        lock->tail = nodeToEnqueue;
+    } else {
+        lock->tail->next = nodeToEnqueue;
+        lock->tail = nodeToEnqueue;
+    }
     return nodeToEnqueue;
 }
 
